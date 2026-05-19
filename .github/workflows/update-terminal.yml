@@ -19,14 +19,12 @@ jobs:
         run: |
           USER="${{ github.repository_owner }}"
           
-          # Requisição segura com o GITHUB_TOKEN nativo
           USER_DATA=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/users/$USER")
           
           REPOS=$(echo "$USER_DATA" | jq '.public_repos // 0')
           GISTS=$(echo "$USER_DATA" | jq '.public_gists // 0')
           FOLLOWERS=$(echo "$USER_DATA" | jq '.followers // 0')
           
-          # Fallback seguro para estrelas se a API der rate-limit
           STARS_DATA=$(curl -s "https://api.github.com/users/$USER/starred")
           if echo "$STARS_DATA" | jq -e '. | text' >/dev/null 2>&1; then
             STARS=0
@@ -34,7 +32,6 @@ jobs:
             STARS=$(echo "$STARS_DATA" | jq '. | length // 0')
           fi
 
-          # Parser de data robusto usando ISO 8601 (padrão da API do GitHub)
           CREATED_AT=$(echo "$USER_DATA" | jq -r '.created_at')
           if [ "$CREATED_AT" != "null" ] && [ ! -z "$CREATED_AT" ]; then
             UPTIME=$(date -d "${CREATED_AT}" +%s 2>/dev/null || date -u -d "${CREATED_AT}" +%s 2>/dev/null)
@@ -47,11 +44,16 @@ jobs:
             UPTIME_STR="unknown uptime"
           fi
 
+          # Calcula matematicamente o eixo X onde a digitação deve começar
+          USER_LEN=${#USER}
+          PROMPT_X=$(awk "BEGIN {print 30 + ($USER_LEN + 17) * 8.42}")
+
           echo "REPOS=$REPOS" >> $GITHUB_ENV
           echo "GISTS=$GISTS" >> $GITHUB_ENV
           echo "FOLLOWERS=$FOLLOWERS" >> $GITHUB_ENV
           echo "STARS=$STARS" >> $GITHUB_ENV
           echo "UPTIME_STR=$UPTIME_STR" >> $GITHUB_ENV
+          echo "PROMPT_X=$PROMPT_X" >> $GITHUB_ENV
 
       - name: Generate SVG
         run: |
@@ -67,34 +69,8 @@ jobs:
               
               .text { font-family: 'Fira Code', 'Courier New', monospace; font-size: 14px; fill: #00ff00; }
               .prompt { font-weight: bold; }
+              .command { fill: #ffffff; }
               .logo { fill: #00ff00; }
-
-              .cmd { 
-                fill: none; 
-                stroke: #ffffff; 
-                stroke-width: 2; 
-                stroke-linecap: round; 
-                stroke-dasharray: 100; 
-                stroke-dashoffset: 100; 
-                animation: typeCmd 0.4s steps(10) forwards;
-              }
-
-              .cmd-whoami   { animation-delay: 0.1s; }
-              .cmd-neofetch { animation-delay: 0.8s; }
-              .cmd-uptime   { animation-delay: 1.8s; }
-              .cmd-exit     { animation-delay: 2.6s; }
-
-              .out-whoami   { opacity: 0; animation: show 0.01s forwards; animation-delay: 0.6s; }
-              .out-neofetch { opacity: 0; animation: show 0.01s forwards; animation-delay: 1.3s; }
-              .out-uptime   { opacity: 0; animation: show 0.01s forwards; animation-delay: 2.3s; }
-              .out-exit     { opacity: 0; animation: show 0.01s forwards; animation-delay: 3.1s; }
-
-              @keyframes typeCmd {
-                to { stroke-dashoffset: 0; fill: #ffffff; stroke: none; }
-              }
-              @keyframes show {
-                to { opacity: 1; }
-              }
             </style>
 
             <rect width="800" height="500" class="bg" />
@@ -103,22 +79,30 @@ jobs:
             <circle class="dot dot-yellow" />
             <circle class="dot dot-green" />
 
-            <g transform="translate(30, 70)" class="text">
-              <text x="0" y="0">
-                <tspan class="prompt">${{ github.repository_owner }}@github.com :~$ </tspan>
-                <tspan class="cmd cmd-whoami">whoami</tspan>
+            <g class="text">
+              <text x="30" y="90" class="prompt">${{ github.repository_owner }}@github.com :~$ </text>
+              <svg x="${{ env.PROMPT_X }}" y="75" width="0" height="20">
+                <animate attributeName="width" from="0" to="60" dur="0.4s" begin="0.2s" fill="freeze" />
+                <text x="0" y="15" class="command">whoami</text>
+              </svg>
+              <text x="30" y="115" opacity="0">
+                <animate attributeName="opacity" to="1" dur="0.1s" begin="0.7s" fill="freeze" />
+                ${{ github.repository_owner }}
               </text>
-              <text x="0" y="25" class="out-whoami" fill="#00ff00">${{ github.repository_owner }}</text>
 
-              <g>
-                <text x="0" y="60">
-                  <tspan class="prompt">${{ github.repository_owner }}@github.com :~$ </tspan>
-                  <tspan class="cmd cmd-neofetch">neofetch</tspan>
-                </text>
-              </g>
+              <text x="30" y="150" class="prompt" opacity="0">
+                <animate attributeName="opacity" to="1" dur="0.1s" begin="1.2s" fill="freeze" />
+                ${{ github.repository_owner }}@github.com :~$ 
+              </text>
+              <svg x="${{ env.PROMPT_X }}" y="135" width="0" height="20">
+                <animate attributeName="width" from="0" to="75" dur="0.5s" begin="1.3s" fill="freeze" />
+                <text x="0" y="15" class="command">neofetch</text>
+              </svg>
 
-              <g class="out-neofetch">
-                <g transform="translate(0, 80)" class="logo">
+              <g opacity="0">
+                <animate attributeName="opacity" to="1" dur="0.1s" begin="2.0s" fill="freeze" />
+                
+                <g transform="translate(30, 170)" class="logo">
                   <rect x="60" y="0" width="80" height="15" />
                   <rect x="40" y="18" width="120" height="15" />
                   <rect x="20" y="36" width="30" height="15" /> <rect x="70" y="36" width="60" height="15" /> <rect x="150" y="36" width="30" height="15" />
@@ -130,7 +114,7 @@ jobs:
                   <rect x="20" y="144" width="30" height="15" /> <rect x="70" y="144" width="40" height="15" /> <rect x="150" y="144" width="30" height="15" />
                 </g>
 
-                <g transform="translate(250, 90)">
+                <g transform="translate(280, 180)">
                   <text x="0" y="0" font-weight="bold">${{ github.repository_owner }} @github.com</text>
                   <text x="0" y="15">---------------------</text>
                   <text x="0" y="40"><tspan font-weight="bold">OS: </tspan><tspan fill="#fff">GitHub Hacker OS</tspan></text>
@@ -141,23 +125,35 @@ jobs:
                 </g>
               </g>
 
-              <g>
-                <text x="0" y="310">
-                  <tspan class="prompt">${{ github.repository_owner }}@github.com :~$ </tspan>
-                  <tspan class="cmd cmd-uptime">uptime</tspan>
-                </text>
-                <text x="0" y="335" fill="#fff" class="out-uptime">${{ env.UPTIME_STR }}</text>
+              <text x="30" y="340" class="prompt" opacity="0">
+                <animate attributeName="opacity" to="1" dur="0.1s" begin="3.0s" fill="freeze" />
+                ${{ github.repository_owner }}@github.com :~$ 
+              </text>
+              <svg x="${{ env.PROMPT_X }}" y="325" width="0" height="20">
+                <animate attributeName="width" from="0" to="60" dur="0.4s" begin="3.1s" fill="freeze" />
+                <text x="0" y="15" class="command">uptime</text>
+              </svg>
+              <text x="30" y="365" fill="#fff" opacity="0">
+                <animate attributeName="opacity" to="1" dur="0.1s" begin="3.6s" fill="freeze" />
+                ${{ env.UPTIME_STR }}
+              </text>
 
-                <text x="0" y="370" class="out-uptime">
-                  <tspan class="prompt">${{ github.repository_owner }}@github.com :~$ </tspan>
-                  <tspan class="cmd cmd-exit">exit</tspan>
-                </text>
-                <text x="0" y="395" fill="#fff" class="out-exit">exit</text>
-              </g>
+              <text x="30" y="400" class="prompt" opacity="0">
+                <animate attributeName="opacity" to="1" dur="0.1s" begin="4.2s" fill="freeze" />
+                ${{ github.repository_owner }}@github.com :~$ 
+              </text>
+              <svg x="${{ env.PROMPT_X }}" y="385" width="0" height="20">
+                <animate attributeName="width" from="0" to="40" dur="0.3s" begin="4.3s" fill="freeze" />
+                <text x="0" y="15" class="command">exit</text>
+              </svg>
+              <text x="30" y="425" fill="#fff" opacity="0">
+                <animate attributeName="opacity" to="1" dur="0.1s" begin="4.8s" fill="freeze" />
+                logout
+              </text>
             </g>
 
-            <rect x="30" y="465" width="10" height="18" fill="#00ff00" class="out-exit">
-              <animate attributeName="opacity" values="1;0;1" dur="1s" repeatCount="indefinite" />
+            <rect x="30" y="445" width="10" height="18" fill="#00ff00" opacity="0">
+              <animate attributeName="opacity" values="1;0;1" dur="1s" begin="5.0s" repeatCount="indefinite" />
             </rect>
           </svg>
           EOF
