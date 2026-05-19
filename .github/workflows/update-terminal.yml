@@ -48,35 +48,38 @@ jobs:
               
               .text { font-family: 'Fira Code', 'Courier New', monospace; font-size: 14px; fill: #00ff00; }
               .prompt { font-weight: bold; }
-              .command { fill: #ffffff; }
               .logo { fill: #00ff00; }
 
-              /* Efeito de digitação via Clip-path */
-              .type-whoami { clip-path: url(#clip-whoami); animation: type 0.4s steps(6) forwards; animation-delay: 0.2s; }
-              .type-neofetch { clip-path: url(#clip-neofetch); animation: type 0.5s steps(8) forwards; animation-delay: 1s; }
-              .type-uptime { clip-path: url(#clip-uptime); animation: type 0.4s steps(6) forwards; animation-delay: 2.2s; }
-              .type-exit { clip-path: url(#clip-exit); animation: type 0.3s steps(4) forwards; animation-delay: 3.2s; }
-
-              /* Aparições rápidas das respostas */
-              .out-whoami { opacity: 0; animation: flash 0.01s forwards; animation-delay: 0.7s; }
-              .out-neofetch { opacity: 0; animation: flash 0.01s forwards; animation-delay: 1.6s; }
-              .out-uptime { opacity: 0; animation: flash 0.01s forwards; animation-delay: 2.7s; }
-              .out-exit { opacity: 0; animation: flash 0.01s forwards; animation-delay: 3.6s; }
-
-              @keyframes type {
-                to { width: 150px; }
+              /* Animação estável de digitação baseada em largura de renderização */
+              .cmd { 
+                fill: none; 
+                stroke: #ffffff; 
+                stroke-width: 2; 
+                stroke-linecap: round; 
+                stroke-dasharray: 100; 
+                stroke-dashoffset: 100; 
+                animation: typeCmd 0.4s steps(10) forwards;
               }
-              @keyframes flash {
+
+              /* Timings acelerados para o terminal parecer responsivo */
+              .cmd-whoami   { animation-delay: 0.1s; }
+              .cmd-neofetch { animation-delay: 0.8s; }
+              .cmd-uptime   { animation-delay: 1.8s; }
+              .cmd-exit     { animation-delay: 2.6s; }
+
+              /* Revelação imediata dos outputs */
+              .out-whoami   { opacity: 0; animation: show 0.01s forwards; animation-delay: 0.6s; }
+              .out-neofetch { opacity: 0; animation: show 0.01s forwards; animation-delay: 1.3s; }
+              .out-uptime   { opacity: 0; animation: show 0.01s forwards; animation-delay: 2.3s; }
+              .out-exit     { opacity: 0; animation: show 0.01s forwards; animation-delay: 3.1s; }
+
+              @keyframes typeCmd {
+                to { stroke-dashoffset: 0; fill: #ffffff; stroke: none; }
+              }
+              @keyframes show {
                 to { opacity: 1; }
               }
             </style>
-
-            <defs>
-              <clipPath id="clip-whoami"><rect x="0" y="-15" width="0" height="30" id="r1"><animate attributeName="width" to="60" dur="0.4s" begin="0.2s" fill="freeze" calcMode="spline" keySplines="0 0 1 1" keyTimes="0 1"/></rect></clipPath>
-              <clipPath id="clip-neofetch"><rect x="0" y="45" width="0" height="30"><animate attributeName="width" to="80" dur="0.5s" begin="1s" fill="freeze" calcMode="spline" keySplines="0 0 1 1" keyTimes="0 1"/></rect></clipPath>
-              <clipPath id="clip-uptime"><rect x="0" y="295" width="0" height="30"><animate attributeName="width" to="60" dur="0.4s" begin="2.2s" fill="freeze" calcMode="spline" keySplines="0 0 1 1" keyTimes="0 1"/></rect></clipPath>
-              <clipPath id="clip-exit"><rect x="0" y="355" width="0" height="30"><animate attributeName="width" to="40" dur="0.3s" begin="3.2s" fill="freeze" calcMode="spline" keySplines="0 0 1 1" keyTimes="0 1"/></rect></clipPath>
-            </defs>
 
             <rect width="800" height="500" class="bg" />
             <path d="M0,35 L800,35 L800,8 C800,3.5 796.5,0 792,0 L8,0 C3.5,0 0,3.5 0,8 Z" class="bar" />
@@ -87,14 +90,14 @@ jobs:
             <g transform="translate(30, 70)" class="text">
               <text x="0" y="0">
                 <tspan class="prompt">${{ github.repository_owner }}@github.com :~$ </tspan>
-                <tspan class="command" clip-path="url(#clip-whoami)">whoami</tspan>
+                <tspan class="cmd cmd-whoami">whoami</tspan>
               </text>
-              <text x="0" y="25" class="out-whoami">${{ github.repository_owner }}</text>
+              <text x="0" y="25" class="out-whoami" fill="#00ff00">${{ github.repository_owner }}</text>
 
               <g>
                 <text x="0" y="60">
                   <tspan class="prompt">${{ github.repository_owner }}@github.com :~$ </tspan>
-                  <tspan class="command" clip-path="url(#clip-neofetch)">neofetch</tspan>
+                  <tspan class="cmd cmd-neofetch">neofetch</tspan>
                 </text>
               </g>
 
@@ -125,13 +128,13 @@ jobs:
               <g>
                 <text x="0" y="310">
                   <tspan class="prompt">${{ github.repository_owner }}@github.com :~$ </tspan>
-                  <tspan class="command" clip-path="url(#clip-uptime)">uptime</tspan>
+                  <tspan class="cmd cmd-uptime">uptime</tspan>
                 </text>
                 <text x="0" y="335" fill="#fff" class="out-uptime">${{ env.UPTIME_STR }}</text>
 
                 <text x="0" y="370" class="out-uptime">
                   <tspan class="prompt">${{ github.repository_owner }}@github.com :~$ </tspan>
-                  <tspan class="command" clip-path="url(#clip-exit)">exit</tspan>
+                  <tspan class="cmd cmd-exit">exit</tspan>
                 </text>
                 <text x="0" y="395" fill="#fff" class="out-exit">exit</text>
               </g>
