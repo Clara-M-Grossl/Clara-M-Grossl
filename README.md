@@ -47,8 +47,6 @@ Estudante de Engenharia de Computação na UFSC, com interesse em segurança ofe
 <br/>
 
 
-![Hacker Terminal](./terminal.svg)
-
 #
 
 <picture align="center">
