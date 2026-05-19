@@ -1,9 +1,9 @@
-name: Generate Hacker Terminal SVG
+name: Terminal SVG
 
 on:
   schedule:
-    - cron: '0 0 * * *' # Roda todo dia à meia-noite
-  workflow_dispatch: # Permite que você rode manualmente quando quiser
+    - cron: '0 0 * * *'
+  workflow_dispatch: 
 
 jobs:
   build:
@@ -14,17 +14,13 @@ jobs:
 
       - name: Fetch GitHub Stats
         run: |
-          # Coleta dados usando o token padrão do próprio GitHub Actions (seguro)
           USER="${{ github.repository_owner }}"
           
           REPOS=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/users/$USER" | jq '.public_repos')
           GISTS=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/users/$USER" | jq '.public_gists')
           FOLLOWERS=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/users/$USER" | jq '.followers')
-          
-          # Caso queira buscar estrelas (precisa paginar se tiver muitas, aqui pega as da primeira página pública)
           STARS=$(curl -s "https://api.github.com/users/$USER/starred" | jq '. | length')
 
-          # Data de criação da conta para o Uptime fictício
           CREATED_AT=$(curl -s "https://api.github.com/users/$USER" | jq -r '.created_at')
           UPTIME=$(date -d "$CREATED_AT" +%s)
           NOW=$(date +%s)
@@ -54,20 +50,6 @@ jobs:
               .prompt { font-weight: bold; }
               .command { fill: #ffffff; }
               
-              /* Animação Hacker de Digitação (Typing Effect) */
-              .type {
-                white-space: nowrap;
-                overflow: hidden;
-                stroke-dasharray: 500;
-                stroke-dashoffset: 500;
-                animation: typing 3s steps(40, end) forwards;
-              }
-              
-              @keyframes typing {
-                from { stroke-dashoffset: 500; max-width: 0; }
-                to { stroke-dashoffset: 0; max-width: 100%; }
-              }
-
               .fade-in {
                 opacity: 0;
                 animation: fadeIn 0.5s ease-in forwards;
@@ -151,5 +133,5 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add terminal.svg
-          git commit -m "Upt: Terminal Stats con estilo hacker" || exit 0
+          git commit -m "update stats" || exit 0
           git push
