@@ -49,19 +49,34 @@ jobs:
               .text { font-family: 'Fira Code', 'Courier New', monospace; font-size: 14px; fill: #00ff00; }
               .prompt { font-weight: bold; }
               .command { fill: #ffffff; }
-              
-              .fade-in {
-                opacity: 0;
-                animation: fadeIn 0.5s ease-in forwards;
-                animation-delay: 2.5s;
-              }
+              .logo { fill: #00ff00; }
 
-              @keyframes fadeIn {
+              /* Efeito de digitação via Clip-path */
+              .type-whoami { clip-path: url(#clip-whoami); animation: type 0.4s steps(6) forwards; animation-delay: 0.2s; }
+              .type-neofetch { clip-path: url(#clip-neofetch); animation: type 0.5s steps(8) forwards; animation-delay: 1s; }
+              .type-uptime { clip-path: url(#clip-uptime); animation: type 0.4s steps(6) forwards; animation-delay: 2.2s; }
+              .type-exit { clip-path: url(#clip-exit); animation: type 0.3s steps(4) forwards; animation-delay: 3.2s; }
+
+              /* Aparições rápidas das respostas */
+              .out-whoami { opacity: 0; animation: flash 0.01s forwards; animation-delay: 0.7s; }
+              .out-neofetch { opacity: 0; animation: flash 0.01s forwards; animation-delay: 1.6s; }
+              .out-uptime { opacity: 0; animation: flash 0.01s forwards; animation-delay: 2.7s; }
+              .out-exit { opacity: 0; animation: flash 0.01s forwards; animation-delay: 3.6s; }
+
+              @keyframes type {
+                to { width: 150px; }
+              }
+              @keyframes flash {
                 to { opacity: 1; }
               }
-              
-              .logo { fill: #00ff00; }
             </style>
+
+            <defs>
+              <clipPath id="clip-whoami"><rect x="0" y="-15" width="0" height="30" id="r1"><animate attributeName="width" to="60" dur="0.4s" begin="0.2s" fill="freeze" calcMode="spline" keySplines="0 0 1 1" keyTimes="0 1"/></rect></clipPath>
+              <clipPath id="clip-neofetch"><rect x="0" y="45" width="0" height="30"><animate attributeName="width" to="80" dur="0.5s" begin="1s" fill="freeze" calcMode="spline" keySplines="0 0 1 1" keyTimes="0 1"/></rect></clipPath>
+              <clipPath id="clip-uptime"><rect x="0" y="295" width="0" height="30"><animate attributeName="width" to="60" dur="0.4s" begin="2.2s" fill="freeze" calcMode="spline" keySplines="0 0 1 1" keyTimes="0 1"/></rect></clipPath>
+              <clipPath id="clip-exit"><rect x="0" y="355" width="0" height="30"><animate attributeName="width" to="40" dur="0.3s" begin="3.2s" fill="freeze" calcMode="spline" keySplines="0 0 1 1" keyTimes="0 1"/></rect></clipPath>
+            </defs>
 
             <rect width="800" height="500" class="bg" />
             <path d="M0,35 L800,35 L800,8 C800,3.5 796.5,0 792,0 L8,0 C3.5,0 0,3.5 0,8 Z" class="bar" />
@@ -72,19 +87,18 @@ jobs:
             <g transform="translate(30, 70)" class="text">
               <text x="0" y="0">
                 <tspan class="prompt">${{ github.repository_owner }}@github.com :~$ </tspan>
-                <tspan class="command">whoami</tspan>
+                <tspan class="command" clip-path="url(#clip-whoami)">whoami</tspan>
               </text>
-              
-              <text x="0" y="25" class="fade-in">${{ github.repository_owner }}</text>
+              <text x="0" y="25" class="out-whoami">${{ github.repository_owner }}</text>
 
-              <g class="fade-in" style="animation-delay: 1.5s;">
+              <g>
                 <text x="0" y="60">
                   <tspan class="prompt">${{ github.repository_owner }}@github.com :~$ </tspan>
-                  <tspan class="command">neofetch</tspan>
+                  <tspan class="command" clip-path="url(#clip-neofetch)">neofetch</tspan>
                 </text>
               </g>
 
-              <g class="fade-in" style="animation-delay: 2s;">
+              <g class="out-neofetch">
                 <g transform="translate(0, 80)" class="logo">
                   <rect x="60" y="0" width="80" height="15" />
                   <rect x="40" y="18" width="120" height="15" />
@@ -108,21 +122,22 @@ jobs:
                 </g>
               </g>
 
-              <g class="fade-in" style="animation-delay: 3.5s;">
+              <g>
                 <text x="0" y="310">
                   <tspan class="prompt">${{ github.repository_owner }}@github.com :~$ </tspan>
-                  <tspan class="command">uptime</tspan>
+                  <tspan class="command" clip-path="url(#clip-uptime)">uptime</tspan>
                 </text>
-                <text x="0" y="335" fill="#fff">${{ env.UPTIME_STR }}</text>
+                <text x="0" y="335" fill="#fff" class="out-uptime">${{ env.UPTIME_STR }}</text>
 
-                <text x="0" y="370">
+                <text x="0" y="370" class="out-uptime">
                   <tspan class="prompt">${{ github.repository_owner }}@github.com :~$ </tspan>
-                  <tspan class="command">exit</tspan>
+                  <tspan class="command" clip-path="url(#clip-exit)">exit</tspan>
                 </text>
+                <text x="0" y="395" fill="#fff" class="out-exit">exit</text>
               </g>
             </g>
-            
-            <rect x="70" y="432" width="10" height="18" fill="#00ff00" class="fade-in" style="animation-delay: 4s;">
+
+            <rect x="30" y="465" width="10" height="18" fill="#00ff00" class="out-exit">
               <animate attributeName="opacity" values="1;0;1" dur="1s" repeatCount="indefinite" />
             </rect>
           </svg>
