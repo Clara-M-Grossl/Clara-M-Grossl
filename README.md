@@ -48,6 +48,8 @@ Estudante de Engenharia de Computação na UFSC, com interesse em segurança ofe
 
 ### 📊 Estatísticas
 
+![Hacker Terminal](./terminal.svg)
+
 <p>  
  <img align="left" alt="GitHub Stats" height="200" style="padding-right: 10px;" src="https://github-readme-stats.vercel.app/api?username=Clara-M-Grossl&show_icons=true&theme=transparent&include_all_commits=true&locale=pt-br" />
 
