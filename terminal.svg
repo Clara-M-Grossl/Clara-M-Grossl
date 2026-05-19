@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="100%" height="100%">
+  <style>
+    .bg { fill: #0d1117; rx: 8px; }
+    .bar { fill: #161b22; }
+    .dot { r: 6px; cy: 18px; }
+    .dot-red { fill: #ff5f56; cx: 25px; }
+    .dot-yellow { fill: #ffbd2e; cx: 45px; }
+    .dot-green { fill: #27c93f; cx: 65px; }
+    
+    .text { font-family: 'Fira Code', 'Courier New', monospace; font-size: 14px; fill: #00ff00; }
+    .prompt { font-weight: bold; }
+    .command { fill: #ffffff; }
+    
+    /* Animação Hacker de Digitação (Typing Effect) */
+    .type {
+      white-space: nowrap;
+      overflow: hidden;
+      stroke-dasharray: 500;
+      stroke-dashoffset: 500;
+      animation: typing 3s steps(40, end) forwards;
+    }
+    
+    @keyframes typing {
+      from { stroke-dashoffset: 500; max-width: 0; }
+      to { stroke-dashoffset: 0; max-width: 100%; }
+    }
+
+    .fade-in {
+      opacity: 0;
+      animation: fadeIn 0.5s ease-in forwards;
+      animation-delay: 2.5s;
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+    
+    .logo { fill: #00ff00; }
+  </style>
+
+  <rect width="800" height="500" class="bg" />
+  <path d="M0,35 L800,35 L800,8 C800,3.5 796.5,0 792,0 L8,0 C3.5,0 0,3.5 0,8 Z" class="bar" />
+  <circle class="dot dot-red" />
+  <circle class="dot dot-yellow" />
+  <circle class="dot dot-green" />
+
+  <g transform="translate(30, 70)" class="text">
+    <text x="0" y="0">
+      <tspan class="prompt">Clara-M-Grossl@github.com :~$ </tspan>
+      <tspan class="command">whoami</tspan>
+    </text>
+    
+    <text x="0" y="25" class="fade-in">Clara-M-Grossl</text>
+
+    <g class="fade-in" style="animation-delay: 1.5s;">
+      <text x="0" y="60">
+        <tspan class="prompt">Clara-M-Grossl@github.com :~$ </tspan>
+        <tspan class="command">neofetch</tspan>
+      </text>
+    </g>
+
+    <g class="fade-in" style="animation-delay: 2s;">
+      <g transform="translate(0, 80)" class="logo">
+        <rect x="60" y="0" width="80" height="15" />
+        <rect x="40" y="18" width="120" height="15" />
+        <rect x="20" y="36" width="30" height="15" /> <rect x="70" y="36" width="60" height="15" /> <rect x="150" y="36" width="30" height="15" />
+        <rect x="10" y="54" width="30" height="15" /> <rect x="160" y="54" width="30" height="15" />
+        <rect x="10" y="72" width="30" height="15" /> <rect x="160" y="72" width="30" height="15" />
+        <rect x="10" y="90" width="30" height="15" /> <rect x="160" y="90" width="30" height="15" />
+        <rect x="10" y="108" width="30" height="15" /> <rect x="160" y="108" width="30" height="15" />
+        <rect x="10" y="126" width="40" height="15" /> <rect x="150" y="126" width="40" height="15" />
+        <rect x="20" y="144" width="30" height="15" /> <rect x="70" y="144" width="40" height="15" /> <rect x="150" y="144" width="30" height="15" />
+      </g>
+
+      <g transform="translate(250, 90)">
+        <text x="0" y="0" font-weight="bold">Clara-M-Grossl @github.com</text>
+        <text x="0" y="15">---------------------</text>
+        <text x="0" y="40"><tspan font-weight="bold">OS: </tspan><tspan fill="#fff">GitHub Hacker OS</tspan></text>
+        <text x="0" y="60"><tspan font-weight="bold">Repos: </tspan><tspan fill="#fff">12</tspan></text>
+        <text x="0" y="80"><tspan font-weight="bold">Gists: </tspan><tspan fill="#fff">0</tspan></text>
+        <text x="0" y="100"><tspan font-weight="bold">Stars: </tspan><tspan fill="#fff">28</tspan></text>
+        <text x="0" y="120"><tspan font-weight="bold">Followers: </tspan><tspan fill="#fff">9</tspan></text>
+      </g>
+    </g>
+
+    <g class="fade-in" style="animation-delay: 3.5s;">
+      <text x="0" y="310">
+        <tspan class="prompt">Clara-M-Grossl@github.com :~$ </tspan>
+        <tspan class="command">uptime</tspan>
+      </text>
+      <text x="0" y="335" fill="#fff">1 years, 93 days</text>
+
+      <text x="0" y="370">
+        <tspan class="prompt">Clara-M-Grossl@github.com :~$ </tspan>
+        <tspan class="command">exit</tspan>
+      </text>
+    </g>
+  </g>
+  
+  <rect x="70" y="432" width="10" height="18" fill="#00ff00" class="fade-in" style="animation-delay: 4s;">
+    <animate attributeName="opacity" values="1;0;1" dur="1s" repeatCount="indefinite" />
+  </rect>
+</svg>
