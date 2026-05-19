@@ -5,6 +5,9 @@ on:
     - cron: '0 0 * * *'
   workflow_dispatch: 
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -16,23 +19,39 @@ jobs:
         run: |
           USER="${{ github.repository_owner }}"
           
-          REPOS=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/users/$USER" | jq '.public_repos')
-          GISTS=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/users/$USER" | jq '.public_gists')
-          FOLLOWERS=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/users/$USER" | jq '.followers')
-          STARS=$(curl -s "https://api.github.com/users/$USER/starred" | jq '. | length')
+          # Requisição segura com o GITHUB_TOKEN nativo
+          USER_DATA=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/users/$USER")
+          
+          REPOS=$(echo "$USER_DATA" | jq '.public_repos // 0')
+          GISTS=$(echo "$USER_DATA" | jq '.public_gists // 0')
+          FOLLOWERS=$(echo "$USER_DATA" | jq '.followers // 0')
+          
+          # Fallback seguro para estrelas se a API der rate-limit
+          STARS_DATA=$(curl -s "https://api.github.com/users/$USER/starred")
+          if echo "$STARS_DATA" | jq -e '. | text' >/dev/null 2>&1; then
+            STARS=0
+          else
+            STARS=$(echo "$STARS_DATA" | jq '. | length // 0')
+          fi
 
-          CREATED_AT=$(curl -s "https://api.github.com/users/$USER" | jq -r '.created_at')
-          UPTIME=$(date -d "$CREATED_AT" +%s)
-          NOW=$(date +%s)
-          DIFF=$(( (NOW - UPTIME) / 86400 ))
-          YEARS=$(( DIFF / 365 ))
-          DAYS=$(( DIFF % 365 ))
+          # Parser de data robusto usando ISO 8601 (padrão da API do GitHub)
+          CREATED_AT=$(echo "$USER_DATA" | jq -r '.created_at')
+          if [ "$CREATED_AT" != "null" ] && [ ! -z "$CREATED_AT" ]; then
+            UPTIME=$(date -d "${CREATED_AT}" +%s 2>/dev/null || date -u -d "${CREATED_AT}" +%s 2>/dev/null)
+            NOW=$(date +%s)
+            DIFF=$(( (NOW - UPTIME) / 86400 ))
+            YEARS=$(( DIFF / 365 ))
+            DAYS=$(( DIFF % 365 ))
+            UPTIME_STR="$YEARS years, $DAYS days"
+          else
+            UPTIME_STR="unknown uptime"
+          fi
 
           echo "REPOS=$REPOS" >> $GITHUB_ENV
           echo "GISTS=$GISTS" >> $GITHUB_ENV
           echo "FOLLOWERS=$FOLLOWERS" >> $GITHUB_ENV
           echo "STARS=$STARS" >> $GITHUB_ENV
-          echo "UPTIME_STR=$YEARS years, $DAYS days" >> $GITHUB_ENV
+          echo "UPTIME_STR=$UPTIME_STR" >> $GITHUB_ENV
 
       - name: Generate SVG
         run: |
@@ -50,7 +69,6 @@ jobs:
               .prompt { font-weight: bold; }
               .logo { fill: #00ff00; }
 
-              /* Animação estável de digitação baseada em largura de renderização */
               .cmd { 
                 fill: none; 
                 stroke: #ffffff; 
@@ -61,13 +79,11 @@ jobs:
                 animation: typeCmd 0.4s steps(10) forwards;
               }
 
-              /* Timings acelerados para o terminal parecer responsivo */
               .cmd-whoami   { animation-delay: 0.1s; }
               .cmd-neofetch { animation-delay: 0.8s; }
               .cmd-uptime   { animation-delay: 1.8s; }
               .cmd-exit     { animation-delay: 2.6s; }
 
-              /* Revelação imediata dos outputs */
               .out-whoami   { opacity: 0; animation: show 0.01s forwards; animation-delay: 0.6s; }
               .out-neofetch { opacity: 0; animation: show 0.01s forwards; animation-delay: 1.3s; }
               .out-uptime   { opacity: 0; animation: show 0.01s forwards; animation-delay: 2.3s; }
