@@ -6,7 +6,7 @@ Estudante de Engenharia de Computação na UFSC, com interesse em segurança ofe
 
 ---
 
-### 🤖 Linguagens e Tecnologias
+## Linguagens e Tecnologias
 
 <img 
     align="left" 
@@ -46,8 +46,6 @@ Estudante de Engenharia de Computação na UFSC, com interesse em segurança ofe
 <br/>
 <br/>
 
-
-#
 
 <picture align="center">
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Clara-M-Grossl/Clara-M-Grossl/output/github-contribution-grid-snake-dark.svg">
